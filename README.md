@@ -2,7 +2,7 @@
 ```
 基于shadowsocks实现科学上网
 
-该软件的作用是 自动获取 shadowsocks 的帐号密码，感谢 （http://www.ishadowsocks.net/）
+该软件的作用是 (定时，间隔一分钟)获取 shadowsocks 的帐号密码，感谢 （http://www.ishadowsocks.net/）
 然后开启 sock 代理感谢（https://github.com/shadowsocks/shadowsocks-go）
 
 ```
