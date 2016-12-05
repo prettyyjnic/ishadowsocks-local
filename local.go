@@ -284,7 +284,7 @@ func createServerConn(rawaddr []byte, addr string) (remote *ss.Conn, err error) 
 	return nil, err
 }
 
-func handleConnection(conn net.Conn, refresh chan int8) {
+func handleConnection(conn net.Conn) {
 	if debug {
 		debug.Printf("socks connect from %s\n", conn.RemoteAddr().String())
 	}
@@ -319,7 +319,6 @@ func handleConnection(conn net.Conn, refresh chan int8) {
 		if len(servers.srvCipher) > 1 {
 			log.Println("Failed connect to all avaiable shadowsocks server")
 		}
-		refresh <- 1
 		return
 	}
 	defer func() {
@@ -340,7 +339,6 @@ func run(listenAddr string) {
 		log.Fatal(err)
 	}
 	log.Printf("starting local socks5 server at %v ...\n", listenAddr)
-	refresh := make(chan int8)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -349,14 +347,10 @@ func run(listenAddr string) {
 		}
 		log.Println("connecting")
 
-		go handleConnection(conn, refresh)
-		go func() {
-			select {
-			case <-refresh:
-				refreshSs()
-			}
-		}()
+		go handleConnection(conn)
+
 	}
+
 }
 
 func enoughOptions(config *ss.Config) bool {
@@ -365,6 +359,7 @@ func enoughOptions(config *ss.Config) bool {
 }
 
 func refreshSs() {
+
 	config, err := splideSsConfig(localPort, timeout)
 
 	if err != nil {
@@ -372,7 +367,7 @@ func refreshSs() {
 		return
 	}
 
-	fmt.Printf("开始启动ss服务\n")
+	fmt.Printf("refreshing\n")
 
 	if config.Method == "" {
 		config.Method = "aes-256-cfb"
@@ -456,6 +451,12 @@ func main() {
 	flag.Parse()
 	ss.SetDebug(debug)
 	refreshSs()
-
+	go func() {
+		for {
+			<-time.Tick(time.Minute * 1)
+			log.Println("开始刷新")
+			refreshSs()
+		}
+	}()
 	run(cmdLocal + ":" + strconv.Itoa(localPort))
 }
