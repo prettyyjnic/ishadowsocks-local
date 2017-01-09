@@ -428,6 +428,12 @@ func splideSsConfig(port int, timeout int) (*ss.Config, error) {
 			}
 
 		})
+		// 检查扒取数据是否完成
+		for k := 0; k < 2; k++ {
+			if serverConfig[k] == "" {
+				return
+			}
+		}
 		serverPasswordConfigs = append(serverPasswordConfigs, serverConfig)
 	})
 	if len(serverPasswordConfigs) == 0 {
