@@ -402,27 +402,28 @@ func splideSsConfig(port int, timeout int) (*ss.Config, error) {
 		ServerPassword: make([][]string, 0),
 	}
 	log.Printf("开始扒取实验帐号信息")
-	doc, err := goquery.NewDocument("http://www.ishadowsocks.net/")
+	doc, err := goquery.NewDocument("http://fast.ishadow.online/")
 	if err != nil {
 		return nil, errors.New("goquery document error : " + err.Error() + "\n")
 	}
 
 	serverPasswordConfigs := make([][]string, 0, 3)
-	doc.Find("#free .container .col-sm-4").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#portfolio .container .row .portfolio-items .col-sm-6 .hover-text").Each(func(i int, s *goquery.Selection) {
 		serverConfig := make([]string, 3, 3)
 		s.Find("h4").Each(func(j int, s2 *goquery.Selection) {
 			if j < 4 { // 扒取有用信息
 				text := s2.Text()
+				text = strings.Replace(text, "：", ":", -1) //中文：转英文
 				textSplitResult := strings.Split(text, ":")
 				switch j {
 				case 0: //服务器地址信息
-					serverConfig[0] = textSplitResult[1]
+					serverConfig[0] = strings.Trim(textSplitResult[1], " ")
 				case 1:
-					serverConfig[0] = serverConfig[0] + ":" + textSplitResult[1]
+					serverConfig[0] = serverConfig[0] + ":" + strings.Trim(textSplitResult[1], " ")
 				case 2:
-					serverConfig[1] = textSplitResult[1]
+					serverConfig[1] = strings.Trim(textSplitResult[1], " ")
 				case 3:
-					serverConfig[2] = textSplitResult[1]
+					serverConfig[2] = strings.Trim(textSplitResult[1], " ")
 				}
 				return
 			}
