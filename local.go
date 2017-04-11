@@ -451,19 +451,19 @@ func main() {
 	log.SetOutput(os.Stdout)
 
 	var cmdLocal string
-	flag.IntVar(&localPort, "l", 1081, "local socks5 proxy port")
+	flag.IntVar(&localPort, "l", 1080, "local socks5 proxy port")
 	flag.StringVar(&cmdLocal, "b", "", "local address, listen only to this address if specified")
 	flag.BoolVar((*bool)(&debug), "d", true, "print debug message")
 	flag.IntVar(&timeout, "t", 300, "timeout in seconds")
 	flag.Parse()
 	ss.SetDebug(debug)
 	refreshSs()
-	go func() {
-		for {
-			<-time.Tick(time.Minute * 1)
-			log.Println("开始刷新")
-			refreshSs()
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		<-time.Tick(time.Minute * 1)
+	// 		log.Println("开始刷新")
+	// 		refreshSs()
+	// 	}
+	// }()
 	run(cmdLocal + ":" + strconv.Itoa(localPort))
 }
