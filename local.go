@@ -402,7 +402,7 @@ func splideSsConfig(port int, timeout int) (*ss.Config, error) {
 		ServerPassword: make([][]string, 0),
 	}
 	log.Printf("开始扒取实验帐号信息")
-	doc, err := goquery.NewDocument("http://fast.ishadow.online/")
+	doc, err := goquery.NewDocument("http://ss.ishadowx.com/")
 	if err != nil {
 		return nil, errors.New("goquery document error : " + err.Error() + "\n")
 	}
